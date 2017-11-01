@@ -199,7 +199,7 @@ public class MainActivity extends Activity implements View.OnClickListener{
         initView();
     }
 
-    //编写解析函数，解析出城市名称已经更新时间信息
+    //编写解析函数，解析出城市名称以及更新时间信息
     private TodayWeather parseXML(String xmldata){
         TodayWeather todayWeather = null;
         int fengxiangCount=0;
@@ -220,7 +220,7 @@ public class MainActivity extends Activity implements View.OnClickListener{
                     //判断当前时间是否为文档开始时间
                     case XmlPullParser.START_DOCUMENT:
                         break;
-                    //判断当前事件是否为标签元素开始时间
+                    //判断当前时间是否为标签元素开始时间
                     case XmlPullParser.START_TAG:
                         if(xmlPullParser.getName().equals("resp")){
                             todayWeather = new TodayWeather();
