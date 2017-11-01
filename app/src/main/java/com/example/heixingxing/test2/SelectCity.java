@@ -28,7 +28,7 @@ public class SelectCity extends Activity implements View.OnClickListener{
             case R.id.title_back:
                 //传递数据
                 Intent i = new Intent();
-                i.putExtra("cityCode","101160101");
+                i.putExtra("cityCode","101100101");//101160101
                 setResult(RESULT_OK,i);
 
                 finish();

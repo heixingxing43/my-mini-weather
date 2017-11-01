@@ -92,24 +92,28 @@ public class MainActivity extends Activity implements View.OnClickListener{
         windTv.setText("风力:"+todayWeather.getFengli());
         Toast.makeText(MainActivity.this,"更新成功！",Toast.LENGTH_SHORT).show();
 
-        int pm = Integer.parseInt(todayWeather.getPm25());
-        if(pm>=0 && pm<=50){
+        if(todayWeather.getPm25()==null){
             pmImg.setImageResource(R.drawable.biz_plugin_weather_0_50);
-        }
-        if(pm>50 && pm<=100){
-            pmImg.setImageResource(R.drawable.biz_plugin_weather_101_150);
-        }
-        if(pm>100 && pm<=150){
-            pmImg.setImageResource(R.drawable.biz_plugin_weather_101_150);
-        }
-        if(pm>150 && pm<=200){
-            pmImg.setImageResource(R.drawable.biz_plugin_weather_151_200);
-        }
-        if(pm>200 && pm<=300){
-            pmImg.setImageResource(R.drawable.biz_plugin_weather_201_300);
-        }
-        if(pm>=300){
-            pmImg.setImageResource(R.drawable.biz_plugin_weather_greater_300);
+        }else{
+            int pm = Integer.parseInt(todayWeather.getPm25());
+            if(pm>=0 && pm<=50){
+                pmImg.setImageResource(R.drawable.biz_plugin_weather_0_50);
+            }
+            else if(pm>50 && pm<=100){
+                pmImg.setImageResource(R.drawable.biz_plugin_weather_101_150);
+            }
+            else if(pm>100 && pm<=150){
+                pmImg.setImageResource(R.drawable.biz_plugin_weather_101_150);
+            }
+            else if(pm>150 && pm<=200){
+                pmImg.setImageResource(R.drawable.biz_plugin_weather_151_200);
+            }
+            else if(pm>200 && pm<=300){
+                pmImg.setImageResource(R.drawable.biz_plugin_weather_201_300);
+            }
+            else if(pm>=300){
+                pmImg.setImageResource(R.drawable.biz_plugin_weather_greater_300);
+            }
         }
 
         switch (todayWeather.getType()){
@@ -172,6 +176,9 @@ public class MainActivity extends Activity implements View.OnClickListener{
                 break;
             case "中雨":
                 weatherImg.setImageResource(R.drawable.biz_plugin_weather_zhongyu);
+                break;
+            default:
+                weatherImg.setImageResource(R.drawable.biz_plugin_weather_qing);
                 break;
         }
     }

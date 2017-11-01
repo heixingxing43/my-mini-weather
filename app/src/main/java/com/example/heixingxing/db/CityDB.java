@@ -3,6 +3,7 @@ package com.example.heixingxing.db;
 import android.content.Context;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
+import android.util.Log;
 
 import com.example.heixingxing.bean.City;
 
@@ -27,11 +28,17 @@ public class CityDB {
         Cursor c = db.rawQuery("SELECT * from "+ CITY_TABLE_NAME, null);
         while(c.moveToNext()){
             String province = c.getString(c.getColumnIndex("province"));
+            //Log.i("MyApp",province);
             String city = c.getString(c.getColumnIndex("city"));
+            //Log.i("MyApp",city);
             String number = c.getString(c.getColumnIndex("number"));
-            String firstPY = c.getString(c.getColumnIndex("firstPY"));
-            String allPY = c.getString(c.getColumnIndex("allPY"));
-            String allFirstPY = c.getString(c.getColumnIndex("allFirstPY"));
+            //Log.i("MyApp",number);
+            String allPY = c.getString(c.getColumnIndex("allpy"));
+            //Log.i("MyApp",allPY);//这里读不出来,这里要从数据库里获取,所以要和数据库的列名一致
+            String allFirstPY = c.getString(c.getColumnIndex("allfirstpy"));
+            //Log.i("MyApp",allFirstPY);
+            String firstPY = c.getString(c.getColumnIndex("firstpy"));
+            //Log.i("MyApp",firstPY);
             City item = new City(province,city,number,firstPY,allPY,allFirstPY);
             list.add(item);
         }

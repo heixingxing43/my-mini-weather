@@ -37,7 +37,8 @@ public class MyApplication extends Application{
         mCityList = new ArrayList<City>();
         new Thread(new Runnable() {
             @Override
-            public void run() {// TODO Auto-generated method stub
+            public void run() {
+                // TODO Auto-generated method stub
                 prepareCityList();
             }
         }).start();
@@ -49,10 +50,13 @@ public class MyApplication extends Application{
             i++;
             String cityName = city.getCity();
             String cityCode = city.getNumber();
-            Log.d(TAG,cityCode+": "+cityName);
+            Log.d(TAG,cityCode+": "+cityName+" "+i);
         }
         Log.d(TAG,"i="+i);
         return true;
+    }
+    public List<City> getCityList(){
+        return mCityList;
     }
 
     public static MyApplication getInstance(){
