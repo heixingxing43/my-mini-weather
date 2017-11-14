@@ -2,10 +2,22 @@ package com.example.heixingxing.test2;
 
 import android.app.Activity;
 import android.content.Intent;
+import android.database.Cursor;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.View;
+import android.widget.AdapterView;
+import android.widget.ArrayAdapter;
+import android.widget.EditText;
 import android.widget.ImageView;
+import android.widget.ListView;
 import android.widget.Toast;
+
+import com.example.heixingxing.app.MyApplication;
+import com.example.heixingxing.bean.City;
+import com.example.heixingxing.db.CityDB;
+
+import java.util.List;
 
 /**
  * Created by heixingxing on 2017/10/18.
@@ -13,13 +25,20 @@ import android.widget.Toast;
 
 public class SelectCity extends Activity implements View.OnClickListener{
     private ImageView mBackbtn;
+    private ListView mList;
+    private EditText eSearch;
+    //private ClearEditText mClearEditText;
+    private List<City> cityList;
+    private String[] tmp = new String[4000];//"num1","num2","num3","num4","num5"
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.select_city);
 
-        mBackbtn = (ImageView)findViewById(R.id.title_back);
-        mBackbtn.setOnClickListener(this);
+        initViews();
+
+        //mBackbtn = (ImageView)findViewById(R.id.title_back);
+        //mBackbtn.setOnClickListener(this);
     }
 
     @Override
@@ -37,5 +56,38 @@ public class SelectCity extends Activity implements View.OnClickListener{
             default:
                 break;
         }
+    }
+
+    private void initViews(){
+        mBackbtn = (ImageView)findViewById(R.id.title_back);
+        mBackbtn.setOnClickListener(this);
+        mList = (ListView)findViewById(R.id.title_list);
+        eSearch = (EditText)findViewById(R.id.search_city);
+
+        MyApplication myApplication = (MyApplication)getApplication();
+
+        cityList = myApplication.getCityList();
+
+        int i=0;
+        for(City city:cityList){
+            //filterDateList.add(city);
+            tmp[i++] = city.getCity();//+" "+city.getNumber()
+            //Log.i("MyWeather",tmp[i-1]);
+        }
+
+        ArrayAdapter<String> adapter = new ArrayAdapter<String>(
+                SelectCity.this, android.R.layout.simple_list_item_1, tmp);
+        mList.setAdapter(adapter);
+        mList.setOnItemClickListener(new AdapterView.OnItemClickListener(){
+            @Override
+            public void onItemClick(AdapterView<?>adapterView, View view, int i, long l){
+                City city = cityList.get(i);
+                Intent intent = new Intent();
+                intent.putExtra("cityCode",city.getNumber());
+                setResult(RESULT_OK,intent);
+                finish();
+                //Log.i("MyWeather",city.getNumber());
+            }
+        });
     }
 }

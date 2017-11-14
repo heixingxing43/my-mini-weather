@@ -72,6 +72,7 @@ public class MyApplication extends Application{
                 + File.separator + CityDB.CITY_DB_NAME;
         File db = new File(path);
         Log.d(TAG,path);
+        //数据库不存在时新建
         if(!db.exists()){
             String pathholder = "/data"
                     + Environment.getDataDirectory().getAbsolutePath()
@@ -85,7 +86,7 @@ public class MyApplication extends Application{
             }
             Log.i("MyApp","db is not exists");
             try{
-                InputStream is = getAssets().open("city.db");
+                InputStream is = getAssets().open("city.db");   //打开数据库文件
                 FileOutputStream fos = new FileOutputStream(db);
                 int len = 1;
                 byte[] buffer = new byte[1024];

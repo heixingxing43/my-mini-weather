@@ -3,6 +3,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent">
 
+    <!--上方的横框-->
     <RelativeLayout
         android:id="@+id/title"
         android:layout_width="match_parent"
@@ -10,12 +11,14 @@
         android:background="#ff0000"
         android:gravity="center_vertical">
 
+        <!--选择城市图标-->
         <ImageView
             android:id="@+id/title_city_manager"
             android:layout_width="45.0dp"
             android:layout_height="45.0dp"
             android:src="@drawable/title_city"/>
 
+        <!--分割线-->
         <ImageView
             android:id="@+id/city_seperator"
             android:layout_width="1.0dp"
@@ -24,6 +27,7 @@
             android:layout_toRightOf="@id/title_city_manager"
             android:background="#A71717"/>
 
+        <!--城市名-->
         <TextView
             android:id="@+id/title_city_name"
             android:layout_width="wrap_content"
@@ -37,6 +41,7 @@
             android:layout_alignBottom="@+id/city_seperator"
             android:layout_alignTop="@+id/city_seperator" />
 
+        <!--刷新-->
         <ImageView
             android:id="@+id/title_update_btn"
             android:layout_width="45.0dp"
@@ -46,6 +51,7 @@
             android:src="@drawable/title_update"
             android:visibility="visible"/>
 
+        <!--分享图标-->
         <ImageView
             android:id="@+id/title_share"
             android:layout_width="45.0dp"
@@ -53,6 +59,7 @@
             android:layout_toLeftOf="@id/title_update_btn"
             android:src="@drawable/title_share"/>
 
+        <!--位置信息-->
         <ImageView
             android:id="@+id/title_location"
             android:layout_width="45.0dip"

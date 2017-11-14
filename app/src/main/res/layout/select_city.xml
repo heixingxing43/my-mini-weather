@@ -7,7 +7,8 @@
     <RelativeLayout
         android:layout_width="match_parent"
         android:layout_height="45.0dp"
-        android:background="#ffcd2626">
+        android:background="#ffcd2626"
+        android:id="@+id/title_top">
         <TextView
             android:id="@+id/title_name"
             android:layout_width="match_parent"
@@ -33,6 +34,28 @@
             android:layout_toRightOf="@id/title_back"
             android:background="#A71717"
             android:gravity="center"/>
+
+    </RelativeLayout>
+
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/title_top">
+
+        <EditText
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:id="@+id/search_city"
+            android:hint="please input the city name"
+            android:selectAllOnFocus="true"
+            />
+
+        <ListView
+            android:id="@+id/title_list"
+            android:layout_below="@id/search_city"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:background="#ffefd5"></ListView>
 
     </RelativeLayout>
 

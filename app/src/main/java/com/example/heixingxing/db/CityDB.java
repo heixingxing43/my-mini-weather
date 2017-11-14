@@ -23,6 +23,7 @@ public class CityDB {
         db = context.openOrCreateDatabase(path,Context.MODE_PRIVATE,null);
     }
 
+    //从数据库中获取城市数据
     public List<City> getAllCity(){
         List<City> list = new ArrayList<City>();
         Cursor c = db.rawQuery("SELECT * from "+ CITY_TABLE_NAME, null);
