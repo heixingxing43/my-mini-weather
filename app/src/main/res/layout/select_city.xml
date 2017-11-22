@@ -47,7 +47,17 @@
             android:layout_height="wrap_content"
             android:id="@+id/search_city"
             android:hint="please input the city name"
-            android:selectAllOnFocus="true"
+            android:layout_margin="10.0dp"
+            android:drawableLeft="@drawable/magnifying_glass"
+            android:paddingBottom="8.0dp"
+            android:paddingLeft="8.0dp"
+            android:paddingRight="30.0dp"
+            android:paddingTop="8.0dp"
+            android:background="@drawable/contact_search_box_edittext_keyword_background"
+            android:textColor="#ff000000"
+            android:textColorHint="#ffcccccc"
+            android:textSize="15.0sp"
+            android:selectAllOnFocus="false"
             />
 
         <ListView

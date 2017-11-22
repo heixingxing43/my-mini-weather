@@ -198,7 +198,7 @@ public class MainActivity extends Activity implements View.OnClickListener{
         mUpdateBtn.setOnClickListener(this);
 
         if(NetUtil.getNetworkState(this) != NetUtil.NETWORN_NONE){
-            Log.d("myWeather","Network is OK.");
+            Log.d("myWeather","Network is OK1.");
             Toast.makeText(MainActivity.this,"Network is OK.", Toast.LENGTH_LONG).show();
         }else{
             Log.d("myWeather","Network is not OK.");
