@@ -98,6 +98,8 @@ public class MainActivity extends Activity implements View.OnClickListener{
 
         if(todayWeather.getPm25()==null){
             pmImg.setImageResource(R.drawable.biz_plugin_weather_0_50);
+            pmDataTv.setText("无pm值");
+            pmQualityTv.setText("无法估计空气质量");
         }else{
             int pm = Integer.parseInt(todayWeather.getPm25());
             if(pm>=0 && pm<=50){
