@@ -44,6 +44,13 @@ public class SelectCity extends Activity implements View.OnClickListener{
         super.onCreate(savedInstanceState);
         setContentView(R.layout.select_city);
 
+        Intent intent = this.getIntent();
+        //String cityCode = intent.getStringExtra("main_city_code");
+        String cityName = intent.getStringExtra("cityName");
+        Log.d("filter",cityName);
+        mText = (TextView)findViewById(R.id.title_name);
+        mText.setText("当前城市："+cityName);
+
         mBackbtn = (ImageView)findViewById(R.id.title_back);
         mBackbtn.setOnClickListener(this);
         eSearch = (EditText) findViewById(R.id.search_city);
@@ -78,7 +85,7 @@ public class SelectCity extends Activity implements View.OnClickListener{
         mListView.setOnItemClickListener(new AdapterView.OnItemClickListener(){
             @Override
             public void onItemClick(AdapterView<?> adapterView, View view, int i, long l){
-                //Toast.makeText(SelectCity.this, "点击了城市" + mArrayList.get(i), Toast.LENGTH_SHORT).show();
+                Toast.makeText(SelectCity.this, "点击了城市" + mArrayList.get(i), Toast.LENGTH_SHORT).show();
                 newCityCode = selectedList.get(i).getNumber();
                 Intent intent = new Intent();
                 intent.putExtra("cityCode", newCityCode);

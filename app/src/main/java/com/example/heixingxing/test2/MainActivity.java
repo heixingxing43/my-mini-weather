@@ -9,6 +9,7 @@ import android.os.Message;
 import android.util.Log;
 import android.view.View;
 import android.widget.ImageView;
+import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -31,13 +32,19 @@ public class MainActivity extends Activity implements View.OnClickListener{
     private static final int UPDATE_TODAY_WEATHER = 1;
 
     private ImageView mUpdateBtn;   //更新天气添加onclick事件
-
     private ImageView mCitySelect;  //选择城市添加onclick事件
+    private ProgressBar mUpdateProg;
 
     //初始化界面控件
     private TextView cityTv, timeTv, humidityTv, temperature_detail_Tv, weekTv, pmDataTv,
             pmQualityTv, temperatureTv, climateTv, windTv, city_name_Tv;
     private ImageView weatherImg, pmImg;
+
+    //更新未来几日天气
+    private TextView firstDateTv,firstTptTv,firstClimateTv,firstFengliTv;
+    private TextView secondDateTv,secondTptTv,secondClimateTv,secondFengliTv;
+    private TextView thirdDateTv,thirdTptTv,thirdClimateTv,thirdFengliTv;
+    private ImageView firstWeaImg, secondWeaImg, thirdWeaImg;
 
     //构建消息句柄
     private Handler mHandler = new Handler() {
@@ -51,6 +58,35 @@ public class MainActivity extends Activity implements View.OnClickListener{
             }
         }
     };
+
+    @Override
+    protected void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        setContentView(R.layout.weather_info);
+
+        //add in 10.11 about network
+        //为刷新添加onclick事件
+        mUpdateBtn = (ImageView) findViewById(R.id.title_update_btn);
+        mUpdateBtn.setOnClickListener(this);
+        //更新图标旋转
+        mUpdateProg = (ProgressBar)findViewById(R.id.title_update_prog);
+        //为选择城市添加onclick事件
+        mCitySelect = (ImageView) findViewById(R.id.title_city_manager);
+        mCitySelect.setOnClickListener(this);
+
+        initView(); //初始化控件
+
+        if(NetUtil.getNetworkState(this) != NetUtil.NETWORN_NONE){
+            SharedPreferences sharedPreferences = getSharedPreferences("config", MODE_PRIVATE);
+            String cityCode = sharedPreferences.getString("main_city_code", "101010100");
+            queryWeatherCode(cityCode);
+            Log.d("myWeather","Network is OK1.");
+            Toast.makeText(MainActivity.this,"Network is OK.", Toast.LENGTH_LONG).show();
+        }else{
+            Log.d("myWeather","Network is not OK.");
+            Toast.makeText(MainActivity.this,"Network is not OK.", Toast.LENGTH_LONG).show();
+        }
+    }
 
     //对xml文件中的控件进行初始化，findViewById用来获取xml文件中的相应按钮
     void initView(){
@@ -68,6 +104,24 @@ public class MainActivity extends Activity implements View.OnClickListener{
         windTv = (TextView) findViewById(R.id.wind);
         weatherImg = (ImageView) findViewById(R.id.weather_img);
 
+        firstDateTv = (TextView)findViewById(R.id.firstday_date);
+        firstWeaImg = (ImageView)findViewById(R.id.firstday_weather);
+        firstTptTv = (TextView)findViewById(R.id.firstday_temperature);
+        firstClimateTv = (TextView)findViewById(R.id.firstday_climate);
+        firstFengliTv = (TextView)findViewById(R.id.firstday_wind);
+
+        secondDateTv = (TextView)findViewById(R.id.secondday_date);
+        secondWeaImg = (ImageView)findViewById(R.id.secondday_weather);
+        secondTptTv = (TextView)findViewById(R.id.secondday_temperature);
+        secondClimateTv = (TextView)findViewById(R.id.secondday_climate);
+        secondFengliTv = (TextView)findViewById(R.id.secondday_wind);
+
+        thirdDateTv = (TextView)findViewById(R.id.thirdday_date);
+        thirdWeaImg = (ImageView)findViewById(R.id.thirdday_weather);
+        thirdTptTv = (TextView)findViewById(R.id.thirdday_temperature);
+        thirdClimateTv = (TextView)findViewById(R.id.thirdday_climate);
+        thirdFengliTv = (TextView)findViewById(R.id.thirdday_wind);
+
         city_name_Tv.setText("N/A");
         cityTv.setText("N/A");
         timeTv.setText("N/A");
@@ -79,11 +133,62 @@ public class MainActivity extends Activity implements View.OnClickListener{
         temperatureTv.setText("N/A");
         climateTv.setText("N/A");
         windTv.setText("N/A");
+
+        firstDateTv.setText("N/A");
+        firstTptTv.setText("N/A");
+        firstClimateTv.setText("N/A");
+        firstFengliTv.setText("N/A");
+
+        secondDateTv.setText("N/A");
+        secondTptTv.setText("N/A");
+        secondClimateTv.setText("N/A");
+        secondFengliTv.setText("N/A");
+
+        thirdDateTv.setText("N/A");
+        thirdTptTv.setText("N/A");
+        thirdClimateTv.setText("N/A");
+        thirdFengliTv.setText("N/A");
+    }
+
+    //add in 10.11
+    @Override
+    public void onClick(View v) {
+        //关联城市图标 add in 10.18.2017
+        SharedPreferences sharedPreferences = getSharedPreferences("config", MODE_PRIVATE);
+        String cityCode = sharedPreferences.getString("main_city_code","101010100");
+        String cityName = sharedPreferences.getString("cityName","上海");
+        if(v.getId()==R.id.title_city_manager){//点击选择城市的图标
+            Intent i = new Intent(this, SelectCity.class);
+            i.putExtra("cityName", cityName);
+            //i.putExtra("main_city_code", cityCode);
+            startActivityForResult(i,1);    //通过intent传递信息
+        }
+        //get cityID
+        if(v.getId() == R.id.title_update_btn){
+            //从SharedPreferences中读取城市ID。如果未定义则缺省值为101010100
+//            SharedPreferences sharedPreferences = getSharedPreferences("config", MODE_PRIVATE);
+//            String cityCode = sharedPreferences.getString("main_city_code","101010100");
+            Log.d("myWeather",cityCode);
+
+            if(NetUtil.getNetworkState(this) != NetUtil.NETWORN_NONE){
+                Log.d("myWeather", "network is OK");
+                queryWeatherCode(cityCode); //从网络中获取城市信息
+            }else{
+                Log.d("myWeather", "network is not OK");
+                Toast.makeText(MainActivity.this,"network is not OK",Toast.LENGTH_LONG).show();
+            }
+        }
     }
 
     //利用TodayWeather对象更新UI中的控件
     void updateTodayWeather(TodayWeather todayWeather){
         city_name_Tv.setText(todayWeather.getCity()+"天气");
+
+        SharedPreferences sharedPreferences = getSharedPreferences("config", MODE_PRIVATE);
+        SharedPreferences.Editor editor = sharedPreferences.edit();
+        editor.putString("cityName", todayWeather.getCity());
+        editor.commit();
+
         cityTv.setText(todayWeather.getCity());
         timeTv.setText(todayWeather.getUpdatetime()+ "发布");
         humidityTv.setText("湿度："+todayWeather.getShidu());
@@ -187,30 +292,9 @@ public class MainActivity extends Activity implements View.OnClickListener{
                 weatherImg.setImageResource(R.drawable.biz_plugin_weather_qing);
                 break;
         }
-    }
 
-    @Override
-    protected void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-        setContentView(R.layout.weather_info);
-
-        //add in 10.11 about network
-        //为刷新添加onclick事件
-        mUpdateBtn = (ImageView) findViewById(R.id.title_update_btn);
-        mUpdateBtn.setOnClickListener(this);
-
-        if(NetUtil.getNetworkState(this) != NetUtil.NETWORN_NONE){
-            Log.d("myWeather","Network is OK1.");
-            Toast.makeText(MainActivity.this,"Network is OK.", Toast.LENGTH_LONG).show();
-        }else{
-            Log.d("myWeather","Network is not OK.");
-            Toast.makeText(MainActivity.this,"Network is not OK.", Toast.LENGTH_LONG).show();
-        }
-        //为选择城市添加onclick事件
-        mCitySelect = (ImageView) findViewById(R.id.title_city_manager);
-        mCitySelect.setOnClickListener(this);
-
-        initView(); //初始化控件
+        mUpdateBtn.setVisibility(View.VISIBLE);
+        mUpdateProg.setVisibility(View.INVISIBLE);
     }
 
     //编写解析函数，解析出城市名称以及更新时间信息
@@ -243,12 +327,12 @@ public class MainActivity extends Activity implements View.OnClickListener{
                             if(xmlPullParser.getName().equals("city")){
                                 eventType = xmlPullParser.next();   //按顺序读取每一个信息
                                 todayWeather.setCity(xmlPullParser.getText());
-                                //Log.d("myWeather","城市:  "+xmlPullParser.getText());
+                                Log.d("myWeather","城市:  "+xmlPullParser.getText());
                                 //Toast.makeText(MainActivity.this,"city: "+xmlPullParser.getText(), Toast.LENGTH_LONG).show();
                             }else if(xmlPullParser.getName().equals("updatetime")){
                                 eventType = xmlPullParser.next();
                                 todayWeather.setUpdatetime(xmlPullParser.getText());
-                                //Log.d("myWeather","更新时间:  "+xmlPullParser.getText());
+                                Log.d("myWeather","更新时间:  "+xmlPullParser.getText());
                                 //Toast.makeText(MainActivity.this,"updatetime:  "+xmlPullParser.getText(), Toast.LENGTH_LONG).show();
                             }else if(xmlPullParser.getName().equals("shidu")){
                                 eventType = xmlPullParser.next();
@@ -316,6 +400,9 @@ public class MainActivity extends Activity implements View.OnClickListener{
 
     //获取网络数据，参数是cityCode
     private void queryWeatherCode(String cityCode){
+        mUpdateBtn.setVisibility(View.INVISIBLE);
+        mUpdateProg.setVisibility(View.VISIBLE);
+
         final String address = "http://wthrcdn.etouch.cn/WeatherApi?citykey=" + cityCode;
         Log.d("myWeather", address);
         //Toast.makeText(MainActivity.this, address, Toast.LENGTH_LONG).show();
@@ -360,38 +447,8 @@ public class MainActivity extends Activity implements View.OnClickListener{
         }).start();
     }
 
-    //add in 10.11
-    @Override
-    public void onClick(View v) {
-        //关联城市图标 add in 10.18.2017
-        if(v.getId()==R.id.title_city_manager){//点击选择城市的图标
-            Intent i = new Intent(this, SelectCity.class);
-            //startActivity(i);
-            startActivityForResult(i,1);    //通过intent传递信息
-        }
-        //get cityID
-        if(v.getId() == R.id.title_update_btn){
-            //从SharedPreferences中读取城市ID。如果未定义则缺省值为101010100
-            SharedPreferences sharedPreferences = getSharedPreferences("config", MODE_PRIVATE);
-            String oldCityCode = "101010100";
-            String cityCode = sharedPreferences.getString("main_city_code",oldCityCode);
-            Log.d("myWeather",cityCode);
-            //Toast.makeText(MainActivity.this, "refresh", Toast.LENGTH_LONG).show();
-
-            if(NetUtil.getNetworkState(this) != NetUtil.NETWORN_NONE){
-                Log.d("myWeather", "network is OK");
-                //Toast.makeText(MainActivity.this,"network is OK",Toast.LENGTH_LONG).show();
-                queryWeatherCode(cityCode); //从网络中获取城市信息
-            }else{
-                Log.d("myWeather", "network is not OK");
-                Toast.makeText(MainActivity.this,"network is not OK",Toast.LENGTH_LONG).show();
-            }
-        }
-    }
-
     //返回主界面时传递城市的代码
     protected void onActivityResult(int requestCode, int resultCode, Intent data){
-        //Log.d("myWeather","asd");
         if(requestCode == 1 && resultCode == RESULT_OK){
             String newCityCode = data.getStringExtra("cityCode");
             Log.d("myWeather","选择的城市代码："+newCityCode);
@@ -399,7 +456,15 @@ public class MainActivity extends Activity implements View.OnClickListener{
             if(NetUtil.getNetworkState(this) != NetUtil.NETWORN_NONE){
                 Log.d("myWeather", "network is OK");
                 //Toast.makeText(MainActivity.this,"network is OK",Toast.LENGTH_LONG).show();
-                queryWeatherCode(newCityCode);  //从网络中获取数据，参数是newCityCode
+                if(!newCityCode.equals("-1")){
+                    queryWeatherCode(newCityCode);  //从网络中获取数据，参数是newCityCode
+                    SharedPreferences sharedPreferences = getSharedPreferences("config", MODE_PRIVATE);
+                    SharedPreferences.Editor editor = sharedPreferences.edit();
+                    editor.putString("main_city_code", newCityCode);
+                    editor.commit();
+                }else{
+                    Toast.makeText(MainActivity.this, "Failed to match a city.", Toast.LENGTH_LONG).show();
+                }
             }else{
                 Log.d("myWeather", "network is not OK");
                 Toast.makeText(MainActivity.this,"network is not OK",Toast.LENGTH_LONG).show();
