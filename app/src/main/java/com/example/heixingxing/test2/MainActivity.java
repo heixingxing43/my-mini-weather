@@ -6,7 +6,9 @@ import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
+import android.support.v4.view.ViewPager;
 import android.util.Log;
+import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.ImageView;
 import android.widget.ProgressBar;
@@ -20,6 +22,8 @@ import java.io.InputStreamReader;
 import java.io.StringReader;
 import java.net.HttpURLConnection;
 import java.net.URL;
+import java.util.ArrayList;
+import java.util.List;
 
 import com.example.heixingxing.bean.TodayWeather;
 import com.example.heixingxing.util.NetUtil;
@@ -39,6 +43,11 @@ public class MainActivity extends Activity implements View.OnClickListener{
     private TextView cityTv, timeTv, humidityTv, temperature_detail_Tv, weekTv, pmDataTv,
             pmQualityTv, temperatureTv, climateTv, windTv, city_name_Tv;
     private ImageView weatherImg, pmImg;
+
+    //滑动效果监听器
+    private ViewPagerAdapter vpAdapter;
+    private ViewPager vp;
+    private List<View> views;
 
     //更新未来几日天气
     private TextView firstDateTv,firstTptTv,firstClimateTv,firstFengliTv;
@@ -104,6 +113,16 @@ public class MainActivity extends Activity implements View.OnClickListener{
         windTv = (TextView) findViewById(R.id.wind);
         weatherImg = (ImageView) findViewById(R.id.weather_img);
 
+        LayoutInflater inflater = LayoutInflater.from(this);
+        views = new ArrayList<View>();
+        views.add(inflater.inflate(R.layout.weather1, null));
+        views.add(inflater.inflate(R.layout.weather2, null));
+        //实例化一个vp监听器
+        vpAdapter = new ViewPagerAdapter(views,this);
+        //通过findViewById方法找到viewpager对象
+        vp = (ViewPager)findViewById(R.id.viewpager);
+        vp.setAdapter(vpAdapter);
+
         firstDateTv = (TextView)findViewById(R.id.firstday_date);
         firstWeaImg = (ImageView)findViewById(R.id.firstday_weather);
         firstTptTv = (TextView)findViewById(R.id.firstday_temperature);
@@ -134,20 +153,20 @@ public class MainActivity extends Activity implements View.OnClickListener{
         climateTv.setText("N/A");
         windTv.setText("N/A");
 
-        firstDateTv.setText("N/A");
-        firstTptTv.setText("N/A");
-        firstClimateTv.setText("N/A");
-        firstFengliTv.setText("N/A");
-
-        secondDateTv.setText("N/A");
-        secondTptTv.setText("N/A");
-        secondClimateTv.setText("N/A");
-        secondFengliTv.setText("N/A");
-
-        thirdDateTv.setText("N/A");
-        thirdTptTv.setText("N/A");
-        thirdClimateTv.setText("N/A");
-        thirdFengliTv.setText("N/A");
+//        firstDateTv.setText("N/A");
+//        firstTptTv.setText("N/A");
+//        firstClimateTv.setText("N/A");
+//        firstFengliTv.setText("N/A");
+//
+//        secondDateTv.setText("N/A");
+//        secondTptTv.setText("N/A");
+//        secondClimateTv.setText("N/A");
+//        secondFengliTv.setText("N/A");
+//
+//        thirdDateTv.setText("N/A");
+//        thirdTptTv.setText("N/A");
+//        thirdClimateTv.setText("N/A");
+//        thirdFengliTv.setText("N/A");
     }
 
     //add in 10.11
@@ -180,54 +199,31 @@ public class MainActivity extends Activity implements View.OnClickListener{
         }
     }
 
-    //利用TodayWeather对象更新UI中的控件
-    void updateTodayWeather(TodayWeather todayWeather){
-        city_name_Tv.setText(todayWeather.getCity()+"天气");
-
-        SharedPreferences sharedPreferences = getSharedPreferences("config", MODE_PRIVATE);
-        SharedPreferences.Editor editor = sharedPreferences.edit();
-        editor.putString("cityName", todayWeather.getCity());
-        editor.commit();
-
-        cityTv.setText(todayWeather.getCity());
-        timeTv.setText(todayWeather.getUpdatetime()+ "发布");
-        humidityTv.setText("湿度："+todayWeather.getShidu());
-        temperature_detail_Tv.setText("温度："+todayWeather.getWendu()+"℃");
-        pmDataTv.setText(todayWeather.getPm25());
-        pmQualityTv.setText(todayWeather.getQuality());
-        weekTv.setText(todayWeather.getDate());
-        temperatureTv.setText(todayWeather.getHigh()+"~"+todayWeather.getLow());
-        climateTv.setText(todayWeather.getType());
-        windTv.setText("风力:"+todayWeather.getFengli());
-        Toast.makeText(MainActivity.this,"更新成功！",Toast.LENGTH_SHORT).show();
-
-        if(todayWeather.getPm25()==null){
+    //设置PM图片
+    void setPM25Image(int pm){
+        if(pm>=0 && pm<=50){
             pmImg.setImageResource(R.drawable.biz_plugin_weather_0_50);
-            pmDataTv.setText("无pm值");
-            pmQualityTv.setText("无法估计空气质量");
-        }else{
-            int pm = Integer.parseInt(todayWeather.getPm25());
-            if(pm>=0 && pm<=50){
-                pmImg.setImageResource(R.drawable.biz_plugin_weather_0_50);
-            }
-            else if(pm>50 && pm<=100){
-                pmImg.setImageResource(R.drawable.biz_plugin_weather_101_150);
-            }
-            else if(pm>100 && pm<=150){
-                pmImg.setImageResource(R.drawable.biz_plugin_weather_101_150);
-            }
-            else if(pm>150 && pm<=200){
-                pmImg.setImageResource(R.drawable.biz_plugin_weather_151_200);
-            }
-            else if(pm>200 && pm<=300){
-                pmImg.setImageResource(R.drawable.biz_plugin_weather_201_300);
-            }
-            else if(pm>=300){
-                pmImg.setImageResource(R.drawable.biz_plugin_weather_greater_300);
-            }
         }
+        else if(pm>50 && pm<=100){
+            pmImg.setImageResource(R.drawable.biz_plugin_weather_101_150);
+        }
+        else if(pm>100 && pm<=150){
+            pmImg.setImageResource(R.drawable.biz_plugin_weather_101_150);
+        }
+        else if(pm>150 && pm<=200){
+            pmImg.setImageResource(R.drawable.biz_plugin_weather_151_200);
+        }
+        else if(pm>200 && pm<=300){
+            pmImg.setImageResource(R.drawable.biz_plugin_weather_201_300);
+        }
+        else if(pm>=300){
+            pmImg.setImageResource(R.drawable.biz_plugin_weather_greater_300);
+        }
+    }
 
-        switch (todayWeather.getType()){
+    //设置天气图片
+    void setClimateImage(String type){
+        switch (type){
             case "暴雪":
                 weatherImg.setImageResource(R.drawable.biz_plugin_weather_baoxue);
                 break;
@@ -292,6 +288,39 @@ public class MainActivity extends Activity implements View.OnClickListener{
                 weatherImg.setImageResource(R.drawable.biz_plugin_weather_qing);
                 break;
         }
+    }
+
+    //利用TodayWeather对象更新UI中的控件
+    void updateTodayWeather(TodayWeather todayWeather){
+        city_name_Tv.setText(todayWeather.getCity()+"天气");
+
+        SharedPreferences sharedPreferences = getSharedPreferences("config", MODE_PRIVATE);
+        SharedPreferences.Editor editor = sharedPreferences.edit();
+        editor.putString("cityName", todayWeather.getCity());
+        editor.commit();
+
+        cityTv.setText(todayWeather.getCity());
+        timeTv.setText(todayWeather.getUpdatetime()+ "发布");
+        humidityTv.setText("湿度："+todayWeather.getShidu());
+        temperature_detail_Tv.setText("温度："+todayWeather.getWendu()+"℃");
+        pmDataTv.setText(todayWeather.getPm25());
+        pmQualityTv.setText(todayWeather.getQuality());
+        weekTv.setText(todayWeather.getDate());
+        temperatureTv.setText(todayWeather.getHigh()+"~"+todayWeather.getLow());
+        climateTv.setText(todayWeather.getType());
+        windTv.setText("风力:"+todayWeather.getFengli());
+        Toast.makeText(MainActivity.this,"更新成功！",Toast.LENGTH_SHORT).show();
+
+        if(todayWeather.getPm25()==null){
+            pmImg.setImageResource(R.drawable.biz_plugin_weather_0_50);
+            pmDataTv.setText("无pm值");
+            pmQualityTv.setText("无法估计空气质量");
+        }else{
+            int pm = Integer.parseInt(todayWeather.getPm25());
+            setPM25Image(pm);
+        }
+
+        setClimateImage(todayWeather.getType());
 
         mUpdateBtn.setVisibility(View.VISIBLE);
         mUpdateProg.setVisibility(View.INVISIBLE);

@@ -1,0 +1,204 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/weather_page1"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:orientation="horizontal">
+
+    <!--第四天天气信息-->
+    <LinearLayout
+        android:id="@+id/forthday"
+        android:layout_width="wrap_content"
+        android:layout_height="match_parent"
+        android:orientation="vertical"
+        android:layout_alignParentLeft="true"
+        android:gravity="center">
+
+        <!--星期-->
+        <TextView
+            android:id="@+id/forthday_date"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentTop="true"
+            android:text="星期五"
+            android:textColor="@android:color/white"
+            android:textSize="20.0sp"
+            android:layout_gravity="center"/>
+
+        <!--天气图片-->
+        <ImageView
+            android:id="@+id/forthday_weather"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_below="@id/forthday_date"
+            android:layout_alignParentTop="true"
+            android:layout_alignParentLeft="true"
+            android:src="@drawable/biz_plugin_weather_qing"/>
+
+        <!--温度范围-->
+        <TextView
+            android:id="@+id/forthday_temperature"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_below="@id/forthday_weather"
+            android:layout_alignParentRight="true"
+            android:text="-2℃-7℃"
+            android:textColor="@android:color/white"
+            android:textSize="20.0sp"/>
+
+        <!--天气状况-->
+        <TextView
+            android:id="@+id/forthday_climate"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_below="@id/forthday_temperature"
+            android:layout_alignParentRight="true"
+            android:text="多云转晴"
+            android:textColor="@android:color/white"
+            android:textSize="20.0sp"/>
+
+        <!--风力信息-->
+        <TextView
+            android:id="@+id/forthday_wind"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_below="@id/forthday_climate"
+            android:layout_alignParentRight="true"
+            android:text="微风"
+            android:textColor="@android:color/white"
+            android:textSize="20.0sp"/>
+
+    </LinearLayout>
+
+    <!--第五天天气信息-->
+    <LinearLayout
+        android:id="@+id/fifthday"
+        android:layout_width="wrap_content"
+        android:layout_height="match_parent"
+        android:orientation="vertical"
+        android:layout_toRightOf="@id/forthday"
+        android:gravity="center">
+
+        <!--星期-->
+        <TextView
+            android:id="@+id/fifthday_date"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentTop="true"
+            android:text="星期六"
+            android:textColor="@android:color/white"
+            android:textSize="20.0sp"
+            android:layout_gravity="center"/>
+
+        <!--天气图片-->
+        <ImageView
+            android:id="@+id/fifthday_weather"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_below="@id/fifthday_date"
+            android:layout_alignParentTop="true"
+            android:layout_alignParentLeft="true"
+            android:src="@drawable/biz_plugin_weather_qing"/>
+
+        <!--温度范围-->
+        <TextView
+            android:id="@+id/fifthday_temperature"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_below="@id/fifthday_weather"
+            android:layout_alignParentRight="true"
+            android:text="-2℃-7℃"
+            android:textColor="@android:color/white"
+            android:textSize="20.0sp"/>
+
+        <!--天气状况-->
+        <TextView
+            android:id="@+id/fifthday_climate"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_below="@id/fifthday_temperature"
+            android:layout_alignParentRight="true"
+            android:text="多云转晴"
+            android:textColor="@android:color/white"
+            android:textSize="20.0sp"/>
+
+        <!--风力信息-->
+        <TextView
+            android:id="@+id/fifthday_wind"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_below="@id/firstday_climate"
+            android:layout_alignParentRight="true"
+            android:text="微风"
+            android:textColor="@android:color/white"
+            android:textSize="20.0sp"/>
+
+    </LinearLayout>
+
+    <!--第六天天气信息-->
+    <LinearLayout
+        android:id="@+id/sixthday"
+        android:layout_width="wrap_content"
+        android:layout_height="match_parent"
+        android:orientation="vertical"
+        android:layout_alignParentRight="true"
+        android:layout_toRightOf="@id/fifthday"
+        android:gravity="center">
+
+        <!--星期-->
+        <TextView
+            android:id="@+id/sixthday_date"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentTop="true"
+            android:text="星期日"
+            android:textColor="@android:color/white"
+            android:textSize="20.0sp"
+            android:layout_gravity="center"/>
+
+        <!--天气图片-->
+        <ImageView
+            android:id="@+id/sixthday_weather"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_below="@id/sixthday_date"
+            android:layout_alignParentTop="true"
+            android:layout_alignParentLeft="true"
+            android:src="@drawable/biz_plugin_weather_qing"/>
+
+        <!--温度范围-->
+        <TextView
+            android:id="@+id/sixthday_temperature"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_below="@id/sixthday_weather"
+            android:layout_alignParentRight="true"
+            android:text="-2℃-7℃"
+            android:textColor="@android:color/white"
+            android:textSize="20.0sp"/>
+
+        <!--天气状况-->
+        <TextView
+            android:id="@+id/sixthday_climate"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_below="@id/sixthday_temperature"
+            android:layout_alignParentRight="true"
+            android:text="多云转晴"
+            android:textColor="@android:color/white"
+            android:textSize="20.0sp"/>
+
+        <!--风力信息-->
+        <TextView
+            android:id="@+id/sixthday_wind"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_below="@id/sixthday_climate"
+            android:layout_alignParentRight="true"
+            android:text="微风"
+            android:textColor="@android:color/white"
+            android:textSize="20.0sp"/>
+
+    </LinearLayout>
+
+</LinearLayout>
