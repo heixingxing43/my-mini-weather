@@ -125,6 +125,8 @@ public class SelectCity extends Activity implements View.OnClickListener{
                 finish();
                 //Toast.makeText(SelectCity.this,"test",Toast.LENGTH_LONG).show();
                 break;
+            case R.id.search_city:
+                break;
             default:
                 break;
         }
