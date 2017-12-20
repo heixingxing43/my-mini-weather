@@ -89,6 +89,7 @@ public class SelectCity extends Activity implements View.OnClickListener{
                 newCityCode = selectedList.get(i).getNumber();
                 Intent intent = new Intent();
                 intent.putExtra("cityCode", newCityCode);
+                Log.d("filter",newCityCode);
                 setResult(RESULT_OK, intent);
                 finish();
             }
