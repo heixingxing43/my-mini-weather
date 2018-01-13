@@ -3,7 +3,9 @@ package com.example.heixingxing.test2;
 import android.app.Activity;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.graphics.Bitmap;
 import android.os.Bundle;
+import android.os.Environment;
 import android.os.Handler;
 import android.os.Message;
 import android.support.v4.view.ViewPager;
@@ -16,6 +18,8 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import java.io.BufferedReader;
+import java.io.File;
+import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
@@ -25,8 +29,13 @@ import java.net.URL;
 import java.util.ArrayList;
 import java.util.List;
 
+import com.baidu.location.BDLocation;
+import com.baidu.location.BDLocationListener;
+import com.baidu.location.LocationClient;
+import com.baidu.location.LocationClientOption;
+import com.example.heixingxing.Listener.MyLocationListener;
+import com.example.heixingxing.app.MyApplication;
 import com.example.heixingxing.bean.TodayWeather;
-import com.example.heixingxing.util.Location;
 import com.example.heixingxing.util.NetUtil;
 
 import org.xmlpull.v1.XmlPullParser;
@@ -35,9 +44,12 @@ import org.xmlpull.v1.XmlPullParserFactory;
 
 public class MainActivity extends Activity implements View.OnClickListener, ViewPager.OnPageChangeListener{
     private static final int UPDATE_TODAY_WEATHER = 1;
+    public static final int LOCATION = 2;
 
     private ImageView mUpdateBtn;   //更新天气添加onclick事件
     private ImageView mCitySelect;  //选择城市添加onclick事件
+    private ImageView mShareBtn;    //分享按钮
+    private ImageView mLocateBtn;   //定位当前城市
     private ProgressBar mUpdateProg;
 
     //初始化界面控件
@@ -61,7 +73,11 @@ public class MainActivity extends Activity implements View.OnClickListener, View
     private TextView forthDateTv,forthTptTv,forthClimateTv,forthFengliTv;
     private ImageView firstWeaImg, secondWeaImg, thirdWeaImg, forthWeaImg;
 
-    private Location loc = new Location();
+    //定位
+    public LocationClient mLocationClient = null;
+    public LocationClientOption option = null;
+    private MyLocationListener myListener;
+    //private String locate_city = null;
 
     //构建消息句柄
     private Handler mHandler = new Handler() {
@@ -70,6 +86,15 @@ public class MainActivity extends Activity implements View.OnClickListener, View
                 case UPDATE_TODAY_WEATHER:
                     updateTodayWeather((TodayWeather) msg.obj);
                     break;
+                case LOCATION:
+                    String citycode = (String)msg.obj;
+                    Log.d("location",citycode);
+                    if(citycode.equals("-1")){
+                        Toast.makeText(MainActivity.this,"Fail to get location",Toast.LENGTH_SHORT).show();
+                    }else{
+                        queryWeatherCode(citycode);
+                    }
+                    if(mLocationClient.isStarted()) mLocationClient.stop();
                 default:
                     break;
             }
@@ -90,6 +115,12 @@ public class MainActivity extends Activity implements View.OnClickListener, View
         //为选择城市添加onclick事件
         mCitySelect = (ImageView) findViewById(R.id.title_city_manager);
         mCitySelect.setOnClickListener(this);
+        //定位城市添加onclick事件
+        mLocateBtn = (ImageView) findViewById(R.id.title_location);
+        mLocateBtn.setOnClickListener(this);
+        //分享功能
+        mShareBtn = (ImageView)findViewById(R.id.title_share);
+        mShareBtn.setOnClickListener(this);
 
         initView(); //初始化控件
 
@@ -184,6 +215,14 @@ public class MainActivity extends Activity implements View.OnClickListener, View
         SharedPreferences sharedPreferences = getSharedPreferences("config", MODE_PRIVATE);
         String cityCode = sharedPreferences.getString("main_city_code","101010100");
         String cityName = sharedPreferences.getString("cityName","上海");
+        if(v.getId()==R.id.title_location){
+            Log.d("location","getlocation start");
+            getLocation();
+        }
+        if(v.getId() == R.id.title_share){
+            Log.d("share","share");
+            getScreenShot();
+        }
         if(v.getId()==R.id.title_city_manager){//点击选择城市的图标
             Intent i = new Intent(this, SelectCity.class);
             i.putExtra("cityName", cityName);
@@ -194,7 +233,7 @@ public class MainActivity extends Activity implements View.OnClickListener, View
             //从SharedPreferences中读取城市ID。如果未定义则缺省值为101010100
 //            SharedPreferences sharedPreferences = getSharedPreferences("config", MODE_PRIVATE);
 //            String cityCode = sharedPreferences.getString("main_city_code","101010100");
-            Log.d("myWeather",cityCode);
+            Log.d("location",cityCode);
 
             if(NetUtil.getNetworkState(this) != NetUtil.NETWORN_NONE){
                 Log.d("myWeather", "network is OK");
@@ -203,9 +242,6 @@ public class MainActivity extends Activity implements View.OnClickListener, View
                 Log.d("myWeather", "network is not OK");
                 Toast.makeText(MainActivity.this,"network is not OK",Toast.LENGTH_LONG).show();
             }
-        }
-        if(v.getId() == R.id.title_location){
-
         }
     }
 
@@ -754,8 +790,59 @@ public class MainActivity extends Activity implements View.OnClickListener, View
 
     }
 
-    public void getLocation(){
-        loc.startLocation(getApplicationContext());
+    public void initLocationInfo(){
+        Log.d("location","in init");
+        option = new LocationClientOption();
+        option.setIsNeedAddress(true);
+        mLocationClient.setLocOption(option);
+        option.setLocationMode(LocationClientOption.LocationMode.Hight_Accuracy);//可选，设置定位模式，默认高精度；
+        option.setCoorType("bd09ll");//可选，设置返回经纬度坐标类型，默认gcj02
+        option.setScanSpan(1000);//可选，设置发起定位请求的间隔，int类型，单位ms
+        option.setOpenGps(true);//可选，设置是否使用gps，默认false
+        option.setLocationNotify(true);//可选，设置是否当GPS有效时按照1S/1次频率输出GPS结果，默认false
+        option.setIgnoreKillProcess(false);//可选，定位SDK内部是一个service，并放到了独立进程。
+        option.SetIgnoreCacheException(false);//可选，设置是否收集Crash信息，默认收集，即参数为false
+        option.setWifiCacheTimeOut(5*60*1000);//如果设置了该接口，首次启动定位时，会先判断当前WiFi是否超出有效期，若超出有效期，会先重新扫描WiFi，然后定位
+        option.setEnableSimulateGps(false);//可选，设置是否需要过滤GPS仿真结果，默认需要，即参数为false
+        mLocationClient.setLocOption(option);
+    }
 
+    public Handler getmHandler(){
+        return mHandler;
+    }
+
+    public void getLocation(){
+        Log.d("location","in getlocation");
+        mLocationClient = new LocationClient(getApplicationContext());
+        myListener = new MyLocationListener(this);
+        mLocationClient.registerLocationListener(myListener);
+        initLocationInfo();
+        mLocationClient.start();
+    }
+
+    //屏幕截图
+    public void getScreenShot(){
+        View dView = getWindow().getDecorView();
+        dView.setDrawingCacheEnabled(true);
+        dView.buildDrawingCache();
+        Bitmap bmp = dView.getDrawingCache();
+        if (bmp != null){
+            try {
+                Log.d("share","test");
+                // 获取内置SD卡路径
+                String sdCardPath = Environment.getExternalStorageDirectory().getPath();
+                // 图片文件路径
+                String filePath = sdCardPath + File.separator + "screenshot.png";
+
+                File file = new File(filePath);
+                FileOutputStream os = new FileOutputStream(file);
+                bmp.compress(Bitmap.CompressFormat.PNG, 100, os);
+                Toast.makeText(this, "截图已保存", Toast.LENGTH_SHORT).show();
+                os.flush();
+                os.close();
+            } catch (Exception e) {
+
+            }
+        }
     }
 }

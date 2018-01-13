@@ -49,10 +49,12 @@ public class MyApplication extends Application{
         for(City city : mCityList){
             i++;
             String cityName = city.getCity();
+            String province = city.getProvince();
             String cityCode = city.getNumber();
-            Log.d(TAG,cityCode+": "+cityName+" "+i);
+            //Log.d(TAG,cityCode+": "+cityName+" "+i);
         }
         Log.d(TAG,"i="+i);
+        Log.d(TAG," "+mCityList);
         return true;
     }
     public List<City> getCityList(){

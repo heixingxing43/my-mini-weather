@@ -45,7 +45,6 @@ public class SelectCity extends Activity implements View.OnClickListener{
         setContentView(R.layout.select_city);
 
         Intent intent = this.getIntent();
-        //String cityCode = intent.getStringExtra("main_city_code");
         String cityName = intent.getStringExtra("cityName");
         Log.d("filter",cityName);
         mText = (TextView)findViewById(R.id.title_name);
@@ -103,14 +102,6 @@ public class SelectCity extends Activity implements View.OnClickListener{
         adapter = new ArrayAdapter<String>(
                 SelectCity.this, android.R.layout.simple_list_item_1, mArrayList);
         mListView.setAdapter(adapter);
-
-        /*Intent intent = this.getIntent();
-        String cityname = intent.getStringExtra("city");
-
-        mText = (TextView)findViewById(R.id.title_name);
-        mText.setText("当前城市：" + cityname);*/
-
-        //initViews();
     }
 
     @Override
